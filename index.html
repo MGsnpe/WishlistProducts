@@ -5,7 +5,6 @@
 <title>Wishlist</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Police premium -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -28,9 +27,8 @@
         display: flex;
     }
 
-    /* SIDEBAR */
     .sidebar {
-        width: 230px;
+        width: 260px;
         height: 100vh;
         background: var(--sidebar);
         padding: 25px;
@@ -38,6 +36,7 @@
         position: fixed;
         left: 0;
         top: 0;
+        overflow-y: auto;
     }
 
     .sidebar h2 {
@@ -66,11 +65,6 @@
         border-color: var(--primary);
     }
 
-    /* SEARCH BAR */
-    .search {
-        margin-top: 25px;
-    }
-
     .search input {
         width: 100%;
         padding: 12px;
@@ -78,14 +72,37 @@
         border: 1px solid var(--border);
         background: rgba(255,255,255,0.05);
         color: var(--text);
-        font-size: 14px;
+        margin-top: 20px;
     }
 
-    /* MAIN CONTENT */
+    .converter {
+        margin-top: 25px;
+        padding: 15px;
+        background: var(--card);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+    }
+
+    .converter input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.05);
+        color: var(--text);
+    }
+
+    .converter .result {
+        margin-top: 10px;
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
     .content {
-        margin-left: 260px;
+        margin-left: 300px;
         padding: 30px;
-        width: calc(100% - 260px);
+        width: calc(100% - 300px);
     }
 
     h1 {
@@ -134,7 +151,6 @@
         transform: translateY(-2px);
     }
 
-    /* ITEM CARD + 3D EFFECT */
     .item {
         display: flex;
         gap: 18px;
@@ -159,10 +175,6 @@
         border-radius: var(--radius);
         object-fit: cover;
         border: 1px solid var(--border);
-    }
-
-    .info {
-        flex: 1;
     }
 
     .tag {
@@ -194,7 +206,6 @@
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
     <h2>Wishlist</h2>
 
@@ -207,9 +218,15 @@
     <div class="search">
         <input id="searchInput" oninput="searchItems()" placeholder="Rechercher...">
     </div>
+
+    <div class="converter">
+        <strong>Convertisseur Yuan</strong>
+        <input id="cny" type="number" placeholder="Montant en CNY" oninput="convert()">
+        <div class="result" id="eur"></div>
+        <div class="result" id="usd"></div>
+    </div>
 </div>
 
-<!-- MAIN CONTENT -->
 <div class="content">
 
     <h1>Mes articles</h1>
@@ -218,6 +235,9 @@
         <input id="name" placeholder="Nom du produit">
         <input id="price" placeholder="Prix (€)" type="number">
         <input id="url" placeholder="URL du produit">
+
+        <!-- 🔵 NOUVEAU : URL de l'image -->
+        <input id="imageUrl" placeholder="URL de l'image (optionnel)">
 
         <select id="category">
             <option value="vetement">Vêtement</option>
@@ -234,6 +254,15 @@
 </div>
 
 <script>
+function convert() {
+    const cny = parseFloat(document.getElementById("cny").value) || 0;
+    const eurRate = 0.13;
+    const usdRate = 0.14;
+
+    document.getElementById("eur").innerText = "≈ " + (cny * eurRate).toFixed(2) + " EUR";
+    document.getElementById("usd").innerText = "≈ " + (cny * usdRate).toFixed(2) + " USD";
+}
+
 function fetchImage(url) {
     return fetch("https://api.microlink.io/?url=" + encodeURIComponent(url))
         .then(r => r.json())
@@ -245,13 +274,20 @@ async function addItem() {
     const price = document.getElementById("price").value;
     const url = document.getElementById("url").value;
     const category = document.getElementById("category").value;
+    const imageUrl = document.getElementById("imageUrl").value;
 
     if (!name || !price || !url) {
         alert("Merci de remplir tous les champs");
         return;
     }
 
-    const image = await fetchImage(url);
+    let image = "";
+
+    if (imageUrl && (imageUrl.endsWith(".jpg") || imageUrl.endsWith(".png") || imageUrl.endsWith(".jpeg") || imageUrl.endsWith(".webp"))) {
+        image = imageUrl;
+    } else {
+        image = await fetchImage(url);
+    }
 
     const item = { name, price, url, image, category };
 
