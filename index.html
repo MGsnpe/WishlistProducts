@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Wishlist</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Police premium -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --bg: #0a0f18;
+        --sidebar: #0f1624;
+        --card: rgba(255, 255, 255, 0.06);
+        --border: rgba(255, 255, 255, 0.12);
+        --primary: #3b82f6;
+        --text: #e5e7eb;
+        --radius: 14px;
+        --shadow: 0 8px 30px rgba(0,0,0,0.4);
+    }
+
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 230px;
+        height: 100vh;
+        background: var(--sidebar);
+        padding: 25px;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+        position: fixed;
+        left: 0;
+        top: 0;
+    }
+
+    .sidebar h2 {
+        color: var(--primary);
+        margin-bottom: 25px;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .sidebar button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: 0.2s;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .sidebar button:hover {
+        background: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* SEARCH BAR */
+    .search {
+        margin-top: 25px;
+    }
+
+    .search input {
+        width: 100%;
+        padding: 12px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.05);
+        color: var(--text);
+        font-size: 14px;
+    }
+
+    /* MAIN CONTENT */
+    .content {
+        margin-left: 260px;
+        padding: 30px;
+        width: calc(100% - 260px);
+    }
+
+    h1 {
+        font-size: 32px;
+        color: var(--primary);
+        margin-bottom: 20px;
+    }
+
+    .card {
+        background: var(--card);
+        backdrop-filter: blur(12px);
+        padding: 25px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        margin-bottom: 25px;
+        box-shadow: var(--shadow);
+    }
+
+    input, select {
+        width: 100%;
+        padding: 14px;
+        margin: 10px 0;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.05);
+        color: var(--text);
+        font-size: 15px;
+    }
+
+    button.add {
+        width: 100%;
+        padding: 14px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 17px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: 0.2s;
+        font-weight: 600;
+    }
+
+    button.add:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+    }
+
+    /* ITEM CARD + 3D EFFECT */
+    .item {
+        display: flex;
+        gap: 18px;
+        margin-top: 20px;
+        padding: 18px;
+        background: var(--card);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transform-style: preserve-3d;
+    }
+
+    .item:hover {
+        transform: translateY(-6px) rotateX(4deg) rotateY(-4deg);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .item img {
+        width: 120px;
+        height: 120px;
+        border-radius: var(--radius);
+        object-fit: cover;
+        border: 1px solid var(--border);
+    }
+
+    .info {
+        flex: 1;
+    }
+
+    .tag {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--primary);
+        border-radius: 8px;
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .delete {
+        background: #ef4444;
+        padding: 10px 14px;
+        border-radius: var(--radius);
+        color: white;
+        cursor: pointer;
+        border: none;
+        width: 120px;
+        transition: 0.2s;
+    }
+
+    .delete:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+    }
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>Wishlist</h2>
+
+    <button onclick="filterCategory('all')">Tous les articles</button>
+    <button onclick="filterCategory('vetement')">Vêtements</button>
+    <button onclick="filterCategory('tech')">Tech</button>
+    <button onclick="filterCategory('deco')">Déco</button>
+    <button onclick="filterCategory('autre')">Autre</button>
+
+    <div class="search">
+        <input id="searchInput" oninput="searchItems()" placeholder="Rechercher...">
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+    <h1>Mes articles</h1>
+
+    <div class="card">
+        <input id="name" placeholder="Nom du produit">
+        <input id="price" placeholder="Prix (€)" type="number">
+        <input id="url" placeholder="URL du produit">
+
+        <select id="category">
+            <option value="vetement">Vêtement</option>
+            <option value="tech">Tech</option>
+            <option value="deco">Déco</option>
+            <option value="autre">Autre</option>
+        </select>
+
+        <button class="add" onclick="addItem()">Ajouter</button>
+    </div>
+
+    <div id="list"></div>
+
+</div>
+
+<script>
+function fetchImage(url) {
+    return fetch("https://api.microlink.io/?url=" + encodeURIComponent(url))
+        .then(r => r.json())
+        .then(data => data.data.image?.url || "https://via.placeholder.com/150");
+}
+
+async function addItem() {
+    const name = document.getElementById("name").value;
+    const price = document.getElementById("price").value;
+    const url = document.getElementById("url").value;
+    const category = document.getElementById("category").value;
+
+    if (!name || !price || !url) {
+        alert("Merci de remplir tous les champs");
+        return;
+    }
+
+    const image = await fetchImage(url);
+
+    const item = { name, price, url, image, category };
+
+    const items = JSON.parse(localStorage.getItem("items") || "[]");
+    items.push(item);
+    localStorage.setItem("items", JSON.stringify(items));
+
+    displayItems();
+}
+
+function deleteItem(index) {
+    const items = JSON.parse(localStorage.getItem("items") || "[]");
+    items.splice(index, 1);
+    localStorage.setItem("items", JSON.stringify(items));
+    displayItems();
+}
+
+function filterCategory(cat) {
+    displayItems(cat);
+}
+
+function searchItems() {
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    displayItems("all", query);
+}
+
+function displayItems(filter = "all", search = "") {
+    const items = JSON.parse(localStorage.getItem("items") || "[]");
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    items
+        .filter(item => (filter === "all" || item.category === filter))
+        .filter(item => item.name.toLowerCase().includes(search))
+        .forEach((item, i) => {
+            list.innerHTML += `
+                <div class="item">
+                    <img src="${item.image}">
+                    <div class="info">
+                        <div class="tag">${item.category}</div>
+                        <strong style="font-size:18px">${item.name}</strong><br>
+                        <span style="opacity:0.8">${item.price} €</span><br>
+                        <a href="${item.url}" target="_blank" style="color:var(--primary)">Voir le produit</a>
+                        <br><br>
+                        <button class="delete" onclick="deleteItem(${i})">Supprimer</button>
+                    </div>
+                </div>
+            `;
+        });
+}
+
+displayItems();
+</script>
+
+</body>
+</html>
